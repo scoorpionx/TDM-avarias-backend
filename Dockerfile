@@ -2,7 +2,7 @@ FROM node:12
 
 RUN mkdir -p /home/app/node_modules && chown -R node:node /home/app
 
-WORKDIR /usr/src/app
+WORKDIR /home/app
 
 COPY package.json ./
 
