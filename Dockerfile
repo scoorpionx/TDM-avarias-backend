@@ -1,21 +1,17 @@
 FROM node:12
 
-RUN mkdir -p /home/app/node_modules && chown -R node:node /home/app
-
-WORKDIR /home/app
+WORKDIR /app
 
 COPY package.json ./
-
 COPY yarn.lock ./
 
-RUN yarn
+RUN npm i -g @adonisjs/cli
+RUN npm i
 
-COPY . .
-
-COPY --chown=node:node . .
-
-USER node
+COPY . ./
 
 EXPOSE 3333
 
-CMD [ "adonis", "serve" ]
+CMD adonis key:generate
+
+CMD adonis serve
