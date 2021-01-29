@@ -3,9 +3,9 @@
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
+const { ModelNotFoundException } = require('@adonisjs/lucid/src/Exceptions/index')
 
 const Client = use('App/Models/Client')
-
 /**
  * Resourceful controller for interacting with clients
  */
@@ -19,14 +19,24 @@ class ClientController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index () {
-    const clients = await Client
-      .query()
-      .with('created_by')
-      .with('updated_by')
-      .fetch()
+  async index ({ request, response }) {
+    const query = request.get()
 
-    return clients
+    if(!query.fantasy_name) {
+      const clients = await Client
+        .query()
+        .with('created_by')
+        .with('updated_by')
+        .fetch()
+
+      return clients
+    }
+
+    const findedClients = await Client.findByOrFail('fantasy_name', query.fantasy_name)
+
+    if(!findedClients) return response.status(404)
+
+    return findedClients
   }
 
   /**
@@ -48,15 +58,12 @@ class ClientController {
       'uf',
       'active'
     ])
-
     const client = await Client.create({
       ...data,
       created_by_fk: auth.user.id,
       updated_by_fk: auth.user.id
     })
-    
     return client
-
   }
 
   /**
@@ -97,9 +104,9 @@ class ClientController {
       'uf',
       'active'
     ])
-    
+
     const client = await Client.findOrFail(params.id)
-    
+
     client.merge({
       ...data,
       updated_by_fk: auth.user.id

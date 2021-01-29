@@ -3,31 +3,9 @@
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
 
-const TranslateType = {
-    DEVOLUCAO: 1,
-    ORIGEM: 2,
-}
-
 class Nf extends Model {
     static boot () {
         super.boot()
-        this.addHook('beforeCreate', async (nfInstance) => {
-            nfInstance.type = TranslateType[nfInstance.type]
-
-            if(!nfInstance.type) {
-                throw new Error('Tipo de nota fiscal informado não encontrado.')
-            }
-        })
-        
-        this.addHook('beforeUpdate', async (nfInstance) => {
-            if(typeof nfInstance.$attributes.type == 'string') {
-                nfInstance.$attributes.type = TranslateType[nfInstance.$attributes.type]
-
-                if(!nfInstance.$attributes.type) {
-                    throw new Error('Tipo de nota fiscal informado não encontrado.')
-                }
-            }
-        })
     }
 
     products () {

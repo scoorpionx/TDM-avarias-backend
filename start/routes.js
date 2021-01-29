@@ -18,6 +18,9 @@ const Route = use('Route')
 
 Route.post('/register', 'AuthController.register')
 Route.post('/authenticate', 'AuthController.authenticate')
+Route.get('/report/classic-report', 'ReportController.index').middleware('auth')
+Route.post('/view-index-all', 'ViewIndexAllController.index').middleware('auth')
+Route.put('/view-index-all', 'ViewIndexAllController.show').middleware('auth')
 
 Route.group(() => {
   Route.resource('client', 'ClientController').apiOnly()

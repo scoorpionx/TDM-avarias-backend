@@ -20,15 +20,26 @@ class NfController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index () {
-    const nfs = await Nf
-      .query()
-      .with('products')
-      .with('created_by')
-      .with('updated_by')
-      .fetch()
+  async index ({ request, response }) {
+    const { key } = request.get()
 
-    return nfs
+    if(!key) {
+      const nfs = await Nf
+        .query()
+        .with('products')
+        .with('created_by')
+        .with('updated_by')
+        .fetch()
+
+      return nfs
+    }
+
+    const findedNfs = await Nf.findByOrFail('key', key)
+
+    if(!findedNfs) return response.status(404)
+
+    return findedNfs
+
   }
 
   /**
@@ -48,9 +59,9 @@ class NfController {
       'emission',
       'value'
     ])
-    
+
     const nfProductData = request.only([
-      'products'
+      'product'
     ])
 
     const nf = await Nf.create({
@@ -59,14 +70,11 @@ class NfController {
       updated_by_fk: auth.user.id
     })
 
-
-    nfProductData.products.forEach(async (product) => {
-      await NfProduct.create({
-        nf_id_fk: nf.id,
-        product_id_fk: product.id,
-        created_by_fk: auth.user.id,
-        updated_by_fk: auth.user.id
-      })
+    await NfProduct.create({
+      nf_id_fk: nf.id,
+      product_id_fk: nfProductData.id,
+      created_by_fk: auth.user.id,
+      updated_by_fk: auth.user.id
     })
 
     return Nf

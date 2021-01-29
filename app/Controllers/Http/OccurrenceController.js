@@ -129,9 +129,9 @@ class OccurrenceController {
       'nfd_out',
       'obs'
     ])
-    
+
     const occurrence = await Occurrence.findOrFail(params.id)
-    
+
     occurrence.merge({
       ...data,
       updated_by_fk: auth.user.id

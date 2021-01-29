@@ -9,11 +9,18 @@ class ProductSchema extends Schema {
       table.increments()
       table.boolean('active').notNullable()
       table.string('name', 140)
-      table.integer('packing').notNullable()
-      table.integer('created_by_fk').references('id').inTable('users').notNullable()
-      table.integer('updated_by_fk').references('id').inTable('users').notNullable()
+      table.string('packing', 2).notNullable()
+      table.integer('created_by_fk')
+        .references('id')
+        .inTable('users')
+        .notNullable()
+      table.integer('updated_by_fk')
+        .references('id')
+        .inTable('users')
+        .notNullable()
       table.timestamps()
     })
+    this.raw("ALTER TABLE products ADD CONSTRAINT CK_products_packing CHECK (packing IN('CX', 'UN', 'FD', 'PCT'))")
   }
 
   down () {
